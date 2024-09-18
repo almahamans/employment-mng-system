@@ -1,3 +1,6 @@
+using System.Text.RegularExpressions;
+
+
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 app.UseHttpsRedirection();
@@ -40,7 +43,33 @@ app.MapGet("/employees/{id}", (Guid id) =>
 });
 app.MapPost("/emplyees", (Employee newEmployee) =>
 {
+    if (string.IsNullOrEmpty(newEmployee.FirstName))
+    {
+        return Results.BadRequest("invalid inputs");
+    }
 
+    if (string.IsNullOrEmpty(newEmployee.LastName))
+    {
+        return Results.BadRequest("invalid inputs");
+    }
+    if (string.IsNullOrEmpty(newEmployee.Position))
+    {
+        return Results.BadRequest("invalid inputs");
+    }
+    var foundedEmail = employees.FirstOrDefault(employee => employee.Email == newEmployee.Email).Email;
+
+    if (foundedEmail != null)
+    {
+        return Results.Conflict("Email Already exits");
+    }
+// branch testing
+    string emailPattern = @"^[^@\s]+@[^@\s]+\.(com|net|org|gov)+$";
+
+    if (!Regex.IsMatch(newEmployee.Email, emailPattern))
+    {
+        return Results.BadRequest("not correct format");
+
+    }
     newEmployee.Id = Guid.NewGuid();
     newEmployee.CreatedAt = DateTime.Now;
     employees.Add(newEmployee);
@@ -92,6 +121,5 @@ class Employee
     public decimal? Salary { get; set; }
     public DateTime CreatedAt { get; set; }
 }
-
-
-
+// not doing git add . in this case  when switching to develop  branch
+// using git stash to save current work and checkout to develop branch
