@@ -1,19 +1,17 @@
 var builder = WebApplication.CreateBuilder(args);
-
 var app = builder.Build();
-
 app.UseHttpsRedirection();
 
+List<Employee> employees = new List<Employee>();
+
 app.Run();
-// hello
-Console.WriteLine(" hi");
-//hi
 
-//hi222
-//hiii
-//5
-//hi
-
-//hello world
-//8888
-//
+class Employee{
+    public Guid Id {get; set;}
+    public string? FirstName {get; set;}
+    public string? LastName {get; set;}
+    public string? Email {get; set;}
+    public string? Position {get; set;}
+    public decimal Salary {get; set;}
+    public DateTime CreatedAt {get; set;}
+}
