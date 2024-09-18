@@ -4,7 +4,40 @@ app.UseHttpsRedirection();
 
 List<Employee> employees = new List<Employee>();
 
+app.MapGet("/employees", (HttpRequest request) =>
+{
+    int page = int.TryParse(request.Query["page"], out int parsedPage) ? parsedPage : 1;
+    int limit = int.TryParse(request.Query["limit"], out int parsedLimit) ? parsedLimit : 5;
+    int skip = (page - 1) * limit;
+    var paginatedEmployees = employees.Skip(skip).Take(limit);
+    var resorce = new
+    {
+        Accepte = true,
+        Message = "all employees",
+        Employees = paginatedEmployees
+    };
+    return Results.Ok(resorce);
+});
 
+app.MapGet("/employees/{id}", (Guid id) =>
+{
+    var foundEmployee = employees.FirstOrDefault(emp => emp.Id == id);
+    if (foundEmployee == null)
+    {
+        return Results.NotFound();
+    }
+    else
+    {
+        var resorce = new
+        {
+            Accepte = true,
+            Message = "all employees",
+            Employees = foundEmployee
+        };
+        return Results.Ok(resorce);
+    }
+
+});
 app.MapPost("/emplyees", (Employee newEmployee) =>
 {
 
@@ -32,11 +65,11 @@ app.MapPut("/emplyee/{id}", (Guid id, Employee UpdatedEmployee) =>
     }
 
     foundEmployee.FirstName = UpdatedEmployee.FirstName ?? foundEmployee.FirstName;
-    foundEmployee.LastName = UpdatedEmployee.LastName?? foundEmployee.LastName;
+    foundEmployee.LastName = UpdatedEmployee.LastName ?? foundEmployee.LastName;
     foundEmployee.Email = UpdatedEmployee.Email ?? foundEmployee.Email;
     foundEmployee.Position = UpdatedEmployee.Position ?? foundEmployee.Position;
     foundEmployee.Salary = UpdatedEmployee.Salary ?? foundEmployee.Salary;
-    
+
     var response = new
     {
         success = true,
@@ -59,3 +92,6 @@ class Employee
     public decimal? Salary { get; set; }
     public DateTime CreatedAt { get; set; }
 }
+
+
+
