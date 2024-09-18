@@ -6,3 +6,4 @@ app.UseHttpsRedirection();
 
 app.Run();
 // hello
+Console.WriteLine(" hi");
